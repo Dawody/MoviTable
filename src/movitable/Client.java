@@ -8,9 +8,16 @@ package movitable;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Scanner;
+import jdk.internal.util.xml.impl.Pair;
 
 /**
  *
@@ -20,17 +27,23 @@ import java.util.Scanner;
 
 
 public class Client {
+    
 
-    public static void main(String[] args) throws IOException {
+
+    public static void main(String[] args) throws IOException, ParseException {
         
-        
+        /**
+         * At first client will ask the master for the tablet server number (server port number)
+         */
 //        Socket soc_master = new Socket("localhost", 5432);
 //        PrintWriter pw_master = new PrintWriter(soc_master.getOutputStream(),true);
 //        BufferedReader bf_master = new BufferedReader(new InputStreamReader(soc_master.getInputStream()));
-//        Socket soc_server;
-//        PrintWriter pw_server;
-//        BufferedReader bf_server;
-//        int server_port_number = 0;
+        Socket soc_server;
+        PrintWriter pw_server;
+        BufferedReader bf_server;
+        OutputStream os;
+        ObjectOutputStream oos;
+        int server_port_number = 0;
         
         /**
          * say welcom to user
@@ -49,19 +62,19 @@ public class Client {
         operation = scan.nextInt();
         switch(operation){
             case 1 : 
-                if(searchFilm())
+                if(!searchFilm())
                     System.err.println("error in search!");
                 break;
             case 2 :
-                if(addFilm())
+                if(!addFilm())
                     System.err.println("error in add!");
                 break;
             case 3 :
-                if(deleteFilm())
+                if(!deleteFilm())
                     System.err.println("error in delete!");
                 break;
             case 4 :
-                if(updateFilm())
+                if(!updateFilm())
                     System.err.println("error in update!");
                 break;
             default :
@@ -80,26 +93,68 @@ public class Client {
         
     }
     
+    
+    /**
+     * This function perform the following:
+     * 1. Ask user for row_key
+     * 2. send row_key to master
+     * 3. get tablet_server number from master
+     * 4. send row_key to server
+     * 5. get complete rows[] from server
+     * 6. call print films[] function that may print repeated films according to the time stamp
+     * @return 
+     */
     public static Boolean searchFilm(){
         Scanner scan = new Scanner(System.in);
         String row_key;
         System.out.println("________________________________________________________________________"
                 + "Search Operation"
-                + "please entre the film name : ");
+                + "please enter the film name : ");
         row_key = scan.next();
-        /**
-         * send row_key to master
-         * get tablet_server number
-         * send row_key to server
-         * get complete row from server
-         * call print films function that may print repeated films according to the time stamp
-         */
-        return true;
-    }
-    public static Boolean addFilm(){
         
         return true;
     }
+
+    /**
+     * This function perform the following:
+     * 1. ask user for row_key and row_data[][]
+     * 2. send row_key to master
+     * 3. get tablet server number from master
+     * 4. send row_key and data to server
+     * 5.
+     * 6.
+     * 7.
+     * @return 
+     */
+    public static Boolean addFilm() throws ParseException{
+        Scanner scan = new Scanner(System.in);
+        String title ;
+       
+
+        System.out.println("________________________________________________________________________"
+                + "Add Operation\n"
+                + "please enter the film title : "); //make sure that film is n't existed in the database
+        title = scan.nextLine();
+        
+        Movi movi = new Movi(title);
+        
+        movi.set_category();
+        movi.set_overview();
+        movi.set_language();
+        movi.set_company();
+        movi.set_country();
+        movi.set_runtime();
+        movi.set_adult();
+        movi.set_popularity();
+        
+        
+        
+        
+        
+        return true;
+    }
+    
+    
     public static Boolean deleteFilm(){
         
         return true;
