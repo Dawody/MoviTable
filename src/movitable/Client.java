@@ -1,23 +1,31 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+* To change this license header, choose License Headers in Project Properties.
+* To change this template file, choose Tools | Templates
+* and open the template in the editor.
+*/
 package movitable;
 
 import java.io.BufferedReader;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.NotSerializableException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.io.Serializable;
 import java.net.Socket;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.AbstractMap;
 import java.util.Date;
+import java.util.Map;
 import java.util.Scanner;
 import jdk.internal.util.xml.impl.Pair;
+import org.omg.CORBA.TRANSIENT;
 
 /**
  *
@@ -26,74 +34,138 @@ import jdk.internal.util.xml.impl.Pair;
 
 
 
-public class Client {
+public class Client{
     
 
 
-    public static void main(String[] args) throws IOException, ParseException {
+    public static void main(String[] args) throws IOException, ParseException, ClassNotFoundException {
         
-        /**
-         * At first client will ask the master for the tablet server number (server port number)
-         */
-//        Socket soc_master = new Socket("localhost", 5432);
-//        PrintWriter pw_master = new PrintWriter(soc_master.getOutputStream(),true);
-//        BufferedReader bf_master = new BufferedReader(new InputStreamReader(soc_master.getInputStream()));
-        Socket soc_server;
-        PrintWriter pw_server;
-        BufferedReader bf_server;
-        OutputStream os;
-        ObjectOutputStream oos;
-        int server_port_number = 0;
         
-        /**
-         * say welcom to user
-         * ask him about the film name
-         * ask him about the operation (read_row , add_row , delete_row , set_cell , delete_cell)
-         */
+
+        String master_ip = "localhost";
+        int master_port = 9876;
+        
         Scanner scan = new Scanner(System.in);
         int operation;
+        String row_key;
+        Movi movi;
         System.out.println("_____________WELCOME TO MOVI TABLE_____________");
-        System.out.println("What do you need ?\n"
-                + "1. Search about films\n"
-                + "2. Add new films\n"
-                + "3. Delete film\n"
-                + "4. update film\n"
-                + "please write your choice number : ");
-        operation = scan.nextInt();
-        switch(operation){
-            case 1 : 
-                if(!searchFilm())
-                    System.err.println("error in search!");
+        
+        
+        
+        
+        
+        
+        while(true){
+            System.out.println("=================================================================\n"
+                    + "What do you need ?\n"
+                    + "1. Search about films\n"
+                    + "2. Add new films\n"
+                    + "3. Delete film\n"
+                    + "4. update film\n"
+                    + "please write your choice number : ");
+            operation = scan.nextInt();
+            switch(operation){
+                case 1 :
+                    row_key = searchFilm_interface();
+                    movi = new Movi(row_key,operation);
+                    sendRequest(movi);
+                   
+                                        
+                    
+                    break;
+                case 2 :
+                    movi = addFilm_interface();
+                    sendRequest(movi);
+                    
+                    
+
+                    break;
+                case 3 :
+                    row_key = deleteFilm_interface();
+                    movi = new Movi(row_key , operation);
+                    sendRequest(movi);
+
+                    break;
+                case 4 :
+                    updateFilm_interface();
+
+                    break;
+                default :
+                    System.err.println("Error: Not supported choice, please try again.");
+                    break;
+            }
+            
+            
+            
+            
+            
+            
+            
+        }
+    }
+    
+    
+    public static void sendRequest(Movi movi) throws IOException{
+        //master//ip_port = get_TabletServer(row_key);
+        //test//System.out.println("ip : "+ ip_port.getKey());
+        //test//System.out.println("port : " + ip_port.getValue());
+        Map.Entry<String,Integer> ip_port = new AbstractMap.SimpleEntry<>("localhost",9876);//just assumption for the output of the master!
+        Socket soc_server = new Socket(ip_port.getKey(), ip_port.getValue());
+        OutputStream os = soc_server.getOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream(os);
+        oos.writeObject(movi);
+        switch(movi.get_operation()){
+            case 1:
+                System.out.println("Search request for Film ( "+movi.get_row_key()+" ) is successfully sent to server.");
                 break;
-            case 2 :
-                if(!addFilm())
-                    System.err.println("error in add!");
+            case 2:
+                System.out.println("Data of New Film ( "+movi.get_row_key()+" ) is successfully sent to server.");
                 break;
-            case 3 :
-                if(!deleteFilm())
-                    System.err.println("error in delete!");
+            case 3:
+                System.out.println("Delete request for Film ( "+movi.get_row_key()+" ) is successfully sent to server.");
                 break;
-            case 4 :
-                if(!updateFilm())
-                    System.err.println("error in update!");
-                break;
-            default :
-                System.err.println("Error: Not supported choice, please try again.");
+            case 4:
+                
                 break;
         }
         
-        
-        
-        
-        
-//        soc_server = new Socket("localhost", server_port_number);
-//        pw_server = new PrintWriter(soc_server.getOutputStream(),true);
-//        bf_server = new BufferedReader(new InputStreamReader(soc_server.getInputStream()));
-
+        oos.flush();
+        oos.close();
+        os.close();
+        soc_server.close();
         
     }
     
     
+    
+
+    
+    
+    
+    public static Map.Entry<String,Integer> get_TabletServer(String row_key) throws IOException, ClassNotFoundException{
+        Map.Entry<String,Integer> ip_port;
+        Socket soc_master = new Socket("localhost",5432); //for testing purpos only
+        OutputStream os = soc_master.getOutputStream();
+        InputStream is = soc_master.getInputStream();
+        ObjectOutputStream oos = new ObjectOutputStream(os);
+        ObjectInputStream ois = new ObjectInputStream(is);
+        
+        oos.writeObject(row_key);
+        ip_port = (Map.Entry<String, Integer>) ois.readObject();
+        ois.close();
+        is.close();
+        oos.close();
+        os.close();
+        soc_master.close();
+        
+        return ip_port;
+                
+    
+    }
+    
+    
+    //--------------------------------------------------------------------------------------------------------
     /**
      * This function perform the following:
      * 1. Ask user for row_key
@@ -102,19 +174,19 @@ public class Client {
      * 4. send row_key to server
      * 5. get complete rows[] from server
      * 6. call print films[] function that may print repeated films according to the time stamp
-     * @return 
+     * @return
      */
-    public static Boolean searchFilm(){
+    public static String searchFilm_interface(){
         Scanner scan = new Scanner(System.in);
         String row_key;
-        System.out.println("________________________________________________________________________"
+        System.out.println("________________________________________________________________________\n"
                 + "Search Operation"
                 + "please enter the film name : ");
-        row_key = scan.next();
+        row_key = scan.nextLine();
         
-        return true;
+        return row_key;
     }
-
+    
     /**
      * This function perform the following:
      * 1. ask user for row_key and row_data[][]
@@ -124,20 +196,19 @@ public class Client {
      * 5.
      * 6.
      * 7.
-     * @return 
+     * @return
      */
-    public static Boolean addFilm() throws ParseException{
+    public static Movi addFilm_interface() throws ParseException{
         Scanner scan = new Scanner(System.in);
         String title ;
-       
-
         System.out.println("________________________________________________________________________"
                 + "Add Operation\n"
-                + "please enter the film title : "); //make sure that film is n't existed in the database
+                + "please enter the film title : ");
         title = scan.nextLine();
         
-        Movi movi = new Movi(title);
         
+        Movi movi = new Movi(title,2);
+        movi.set_release();
         movi.set_category();
         movi.set_overview();
         movi.set_language();
@@ -146,25 +217,29 @@ public class Client {
         movi.set_runtime();
         movi.set_adult();
         movi.set_popularity();
-        
-        
-        
-        
-        
-        return true;
+                
+        return movi;
     }
     
     
-    public static Boolean deleteFilm(){
+    public static String deleteFilm_interface(){
+        Scanner scan = new Scanner(System.in);
+        String row_key;
+        System.out.println("________________________________________________________________________"
+                + "Delete Operation"
+                + "please enter the film name : ");
+        row_key = scan.nextLine();
         
-        return true;
+        return row_key;
     }
-    public static Boolean updateFilm(){
-        
-        return true;
-    }
-    
-    
 
+
+    public static Boolean updateFilm_interface(){
+        
+        return true;
+    }
+    
+    
+    
     
 }
