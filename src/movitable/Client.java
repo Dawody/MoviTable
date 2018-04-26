@@ -69,7 +69,21 @@ public class Client{
                 case 1 :
                     row_key = searchFilm_interface();
                     movi = new Movi(row_key,operation);
-                    sendRequest(movi);
+                    movi = sendSearchRequest(movi);
+                    if(movi.get_operation()==0)
+                        System.out.println("Film Not Found");
+                    else
+                    {
+                        movi.print_overview();
+                        movi.print_release();
+                        movi.print_category();
+                        movi.print_country();
+                        movi.print_company();
+                        movi.print_runtime();
+                        movi.print_popularity();
+                        movi.print_adult();
+                        movi.print_language();                        
+                    }
                    
                                         
                     
@@ -88,7 +102,8 @@ public class Client{
 
                     break;
                 case 4 :
-                    updateFilm_interface();
+                    movi  = updateFilm_interface();
+                    sendRequest(movi);
 
                     break;
                 default :
@@ -126,6 +141,7 @@ public class Client{
                 System.out.println("Delete request for Film ( "+movi.get_row_key()+" ) is successfully sent to server.");
                 break;
             case 4:
+                System.out.println("update request for Film ( "+movi.get_row_key()+" ) is successfully sent to server.");
                 
                 break;
         }
@@ -133,7 +149,34 @@ public class Client{
         oos.flush();
         oos.close();
         os.close();
-        soc_server.close();
+        //soc_server.close();
+        
+    }
+    
+    
+    
+    public static Movi sendSearchRequest(Movi movi) throws IOException, ClassNotFoundException{
+        //master//ip_port = get_TabletServer(row_key);
+        //test//System.out.println("ip : "+ ip_port.getKey());
+        //test//System.out.println("port : " + ip_port.getValue());
+        Map.Entry<String,Integer> ip_port = new AbstractMap.SimpleEntry<>("localhost",9876);//just assumption for the output of the master!
+        Socket soc_server = new Socket(ip_port.getKey(), ip_port.getValue());
+        OutputStream os = soc_server.getOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream(os);
+        oos.writeObject(movi);
+        System.out.println("Search request for Film ( "+movi.get_row_key()+" ) is successfully sent to server.");
+
+        oos.flush();
+        
+        InputStream is = soc_server.getInputStream();
+        ObjectInputStream ois = new ObjectInputStream(is);
+        movi = (Movi) ois.readObject();
+
+        return movi;
+
+        //oos.close();
+        //os.close();
+        //soc_server.close();
         
     }
     
@@ -201,7 +244,7 @@ public class Client{
     public static Movi addFilm_interface() throws ParseException{
         Scanner scan = new Scanner(System.in);
         String title ;
-        System.out.println("________________________________________________________________________"
+        System.out.println("________________________________________________________________________\n"
                 + "Add Operation\n"
                 + "please enter the film title : ");
         title = scan.nextLine();
@@ -225,7 +268,7 @@ public class Client{
     public static String deleteFilm_interface(){
         Scanner scan = new Scanner(System.in);
         String row_key;
-        System.out.println("________________________________________________________________________"
+        System.out.println("________________________________________________________________________\n"
                 + "Delete Operation"
                 + "please enter the film name : ");
         row_key = scan.nextLine();
@@ -233,11 +276,100 @@ public class Client{
         return row_key;
     }
 
-
-    public static Boolean updateFilm_interface(){
+    
+    public static Movi updateFilm_interface() throws ParseException{
+        Scanner scan = new Scanner(System.in);
+        String title ;
+        int operation;
+        boolean flag = true;
+        Movi movi = null;
+        System.out.println("________________________________________________________________________\n"
+                + "Update Operation\n"
+                + "please enter the film title : ");
+        title = scan.nextLine();
+        System.out.println("choose the update operation : \n"
+                + "1. set information\n"
+                + "2. delete information\n");
+        while(flag){
+            operation = scan.nextInt();
+            switch(operation){
+                case 1:
+                    //set cell
+                    movi = new Movi(title,4);
+                    updateFilm_set_interface(movi);
+                    
+                    flag=false;
+                    break;
+                case 2:
+                    //delete cell
+                    movi = new Movi(title,5);                    
+                    
+                    flag=false;
+                    break;
+                default:
+                    System.err.println("Not supported option. please try again.");
+            }
+            
+        }
         
-        return true;
+        
+        
+        return movi;
     }
+    
+    
+    public static void updateFilm_set_interface(Movi movi) throws ParseException{
+        Scanner scan = new Scanner(System.in);
+        int q = 0;
+        
+        System.out.println("Do you need to add Release Date ?[0,1]");
+        q=scan.nextInt();
+        if(q==1)
+            movi.set_release();
+
+        System.out.println("Do you need to add Category ?[0,1]");
+        q=scan.nextInt();
+        if(q==1)            
+            movi.set_category();
+        
+        System.out.println("Do you need to add Overview ?[0,1]");
+        q=scan.nextInt();
+        if(q==1)
+            movi.set_overview();
+        
+        System.out.println("Do you need to add Language ?[0,1]");
+        q=scan.nextInt();
+        if(q==1)
+            movi.set_language();
+        
+        System.out.println("Do you need to add Production Company ?[0,1]");
+        q=scan.nextInt();
+        if(q==1)
+            movi.set_company();
+        
+        System.out.println("Do you need to add Pruction Country ?[0,1]");
+        q=scan.nextInt();
+        if(q==1)
+            movi.set_country();
+        
+        System.out.println("Do you need to add Runtime ?[0,1]");
+        q=scan.nextInt();
+        if(q==1)
+            movi.set_runtime();
+        
+        System.out.println("Do you need to add Adults Contrain ?[0,1]");
+        q=scan.nextInt();
+        if(q==1)
+            movi.set_adult();
+        
+        System.out.println("Do you need to add Popularity ?[0,1]");
+        q=scan.nextInt();
+        if(q==1)
+            movi.set_popularity();
+        
+    }
+    
+
     
     
     
