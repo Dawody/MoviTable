@@ -37,6 +37,7 @@ import org.omg.CORBA.TRANSIENT;
 public class Client{
     
 
+    public static String server_ip= "172.28.107.227";
 
     public static void main(String[] args) throws IOException, ParseException, ClassNotFoundException {
         
@@ -44,6 +45,7 @@ public class Client{
 
         String master_ip = "localhost";
         int master_port = 9876;
+        
         
         Scanner scan = new Scanner(System.in);
         int operation;
@@ -125,7 +127,7 @@ public class Client{
         //master//ip_port = get_TabletServer(row_key);
         //test//System.out.println("ip : "+ ip_port.getKey());
         //test//System.out.println("port : " + ip_port.getValue());
-        Map.Entry<String,Integer> ip_port = new AbstractMap.SimpleEntry<>("localhost",9876);//just assumption for the output of the master!
+        Map.Entry<String,Integer> ip_port = new AbstractMap.SimpleEntry<>(server_ip,9876);//just assumption for the output of the master!
         Socket soc_server = new Socket(ip_port.getKey(), ip_port.getValue());
         OutputStream os = soc_server.getOutputStream();
         ObjectOutputStream oos = new ObjectOutputStream(os);
@@ -159,7 +161,7 @@ public class Client{
         //master//ip_port = get_TabletServer(row_key);
         //test//System.out.println("ip : "+ ip_port.getKey());
         //test//System.out.println("port : " + ip_port.getValue());
-        Map.Entry<String,Integer> ip_port = new AbstractMap.SimpleEntry<>("localhost",9876);//just assumption for the output of the master!
+        Map.Entry<String,Integer> ip_port = new AbstractMap.SimpleEntry<>(server_ip,9876);//just assumption for the output of the master!
         Socket soc_server = new Socket(ip_port.getKey(), ip_port.getValue());
         OutputStream os = soc_server.getOutputStream();
         ObjectOutputStream oos = new ObjectOutputStream(os);
