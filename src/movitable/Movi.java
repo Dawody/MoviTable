@@ -1,8 +1,8 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+* To change this license header, choose License Headers in Project Properties.
+* To change this template file, choose Tools | Templates
+* and open the template in the editor.
+*/
 package movitable;
 
 import java.io.Serializable;
@@ -44,7 +44,7 @@ public class Movi implements Serializable{
     private DateFormat formatter;
     private Float ff = new Float(0);
     private int again =0;
-            
+    
     public Movi(String title , int operation){
         this.title=title;
         this.operation = operation;
@@ -73,20 +73,20 @@ public class Movi implements Serializable{
             formatter = new SimpleDateFormat("yyyy-MM-dd");
             tempd = formatter.parse(date);
             release.add(tempd);
-            System.out.println("do you want to entre another time stamp?[1:0]");
+            System.out.println("do you want to entre another time stamp of release date?[1:0]");
             again = scan.nextInt();
         }while(again==1);
-
+        
     }
-
-
+    
+    
     public void set_category(){
         do{
-            Scanner scan = new Scanner(System.in);            
+            Scanner scan = new Scanner(System.in);
             System.out.println("please type film category:");
             temp = scan.nextLine();
             category.add(temp);
-            System.out.println("do you want to entre another time stamp?[1:0]");
+            System.out.println("do you want to entre another time stamp of category?[1:0]");
             again = scan.nextInt();
         }while(again==1);
     }
@@ -97,7 +97,7 @@ public class Movi implements Serializable{
             System.out.println("please type film overview:");
             temp = scan.nextLine();
             overview.add(temp);
-            System.out.println("do you want to entre another time stamp?[1:0]");
+            System.out.println("do you want to entre another time stamp of overview?[1:0]");
             again = scan.nextInt();
         }while(again==1);
     }
@@ -108,7 +108,7 @@ public class Movi implements Serializable{
             System.out.println("please type film language:");
             temp = scan.nextLine();
             language.add(temp);
-            System.out.println("do you want to entre another time stamp?[1:0]");
+            System.out.println("do you want to entre another time stamp of language?[1:0]");
             again = scan.nextInt();
         }while(again==1);
     }
@@ -119,7 +119,7 @@ public class Movi implements Serializable{
             System.out.println("please type film company:");
             temp = scan.nextLine();
             company.add(temp);
-            System.out.println("do you want to entre another time stamp?[1:0]");
+            System.out.println("do you want to entre another time stamp of production company?[1:0]");
             again = scan.nextInt();
         }while(again==1);
     }
@@ -130,7 +130,7 @@ public class Movi implements Serializable{
             System.out.println("please type film country:");
             temp = scan.nextLine();
             country.add(temp);
-            System.out.println("do you want to entre another time stamp?[1:0]");
+            System.out.println("do you want to entre another time stamp of production country?[1:0]");
             again = scan.nextInt();
         }while(again==1);
     }
@@ -141,7 +141,7 @@ public class Movi implements Serializable{
             System.out.println("please type film runtime:");
             tempf = scan.nextFloat();
             runtime.add(tempf);
-            System.out.println("do you want to entre another time stamp?[1:0]");
+            System.out.println("do you want to entre another time stamp of runtime?[1:0]");
             again = scan.nextInt();
         }while(again==1);
     }
@@ -152,22 +152,25 @@ public class Movi implements Serializable{
             System.out.println("is this film for adults?[true or false]");
             tempb = scan.nextBoolean();
             adult.add(tempb);
-            System.out.println("do you want to entre another time stamp?[1:0]");
+            System.out.println("do you want to entre another time stamp of adult constraint?[1:0]");
             again = scan.nextInt();
         }while(again==1);
     }
-
+    
     public void set_popularity(){
         do{
             Scanner scan = new Scanner(System.in);
             System.out.println("please type film popularity:");
             tempf = scan.nextFloat();
             popularity.add(tempf);
-            System.out.println("do you want to entre another time stamp?[1:0]");
+            System.out.println("do you want to entre another time stamp of popularity?[1:0]");
             again = scan.nextInt();
         }while(again==1);
     }
-//-------------------------------------------------------------------------------    
+    
+    
+    
+//-------------------------------------------------------------------------------
     public String get_row_key(){
         return this.title;
     }
@@ -179,19 +182,19 @@ public class Movi implements Serializable{
     public List<String> get_category(){
         return this.category;
     }
-
+    
     public List<String> get_overview(){
         return this.overview;
     }
-
+    
     public List<String> get_language(){
         return this.language;
     }
-
+    
     public List<String> get_company(){
         return this.company;
     }
-
+    
     public List<String> get_country(){
         return this.country;
     }
@@ -199,11 +202,11 @@ public class Movi implements Serializable{
     public List<Float> get_runtime(){
         return this.runtime;
     }
-
+    
     public List<Boolean> get_adult(){
-        return this.adult;        
+        return this.adult;
     }
-
+    
     public List<Float> get_popularity(){
         return this.popularity;
     }
@@ -211,7 +214,168 @@ public class Movi implements Serializable{
     public  int get_operation(){
         return this.operation;
     }
-////-------------------------------------------------------------------------------    
+    
+////--------------------------------------------------------------------------------
+    public void set_release(Date date) throws ParseException{
+        release.add(date);
+    }
+    
+    
+    public void set_category(String str){
+        category.add(str);
+    }
+    
+    public void set_overview(String str){
+        overview.add(str);
+    }
+    
+    public void set_language(String str){
+        language.add(str);
+    }
+    
+    public void set_company(String str){
+        company.add(str);
+    }
+    
+    public void set_country(String str){
+        country.add(str);
+    }
+    
+    public void set_runtime(float  fl){
+        runtime.add(fl);
+    }
+    
+    public void set_adult(boolean bl){
+        adult.add(bl);
+    }
+    
+    public void set_popularity(float fl){
+        popularity.add(fl);
+    }
+    
+    
+////-------------------------------------------------------------------------------
+    
+    public void print_release() throws ParseException{
+        System.out.println("****************************************************\n"
+                + "This film has the following Release Dates: ");
+        int counter=0;
+        for(Date date : this.release)
+        {
+            if(counter>0)
+                System.out.println(date);
+            counter++;
+        }
+        System.out.println("****************************************************");
+    }
+    
+    
+    public void print_category(){
+        System.out.println("****************************************************\n"
+                + "This film has the following Categories: ");
+        int counter=0;
+        for(String str : this.category)
+        {
+            if(counter>0)
+                System.out.println(str);
+            counter++;
+        }
+        System.out.println("****************************************************");
+    }
+    
+    public void print_overview(){
+        System.out.println("****************************************************\n"
+                + "This film has the following Overviewss: ");
+        int counter=0;
+        for(String str : this.overview)
+        {
+            if(counter>0)
+                System.out.println(str);
+            counter++;
+        }
+        System.out.println("****************************************************");
+    }
+    
+    public void print_language(){
+        System.out.println("****************************************************\n"
+                + "This film has the following Languages: ");
+        int counter=0;
+        for(String str : this.language)
+        {
+            if(counter>0)
+                System.out.println(str);
+            counter++;
+        }
+        System.out.println("****************************************************");
+    }
+    
+    public void print_company(){
+        System.out.println("****************************************************\n"
+                + "This film has the following production companies: ");
+        int counter=0;
+        for(String str : this.company)
+        {
+            if(counter>0)
+                System.out.println(str);
+            counter++;
+        }
+        System.out.println("****************************************************");
+    }
+    
+    public void print_country(){
+        System.out.println("****************************************************\n"
+                + "This film has the following production countries: ");
+        int counter=0;
+        for(String str : this.country)
+        {
+            if(counter>0)
+                System.out.println(str);
+            counter++;
+        }
+        System.out.println("****************************************************");
+    }
+    
+    public void print_runtime(){
+        System.out.println("****************************************************\n"
+                + "This film has the following Runtimes: ");
+        int counter=0;
+        for(float fl : this.runtime)
+        {
+            if(counter>0)
+                System.out.println(fl);
+            counter++;
+        }
+        System.out.println("****************************************************");
+    }
+    
+    public void print_adult(){
+        System.out.println("****************************************************\n"
+                + "This film has the following Adult constraints: ");
+        int counter=0;
+        for(boolean bl : this.adult)
+        {
+            if(counter>0)
+                System.out.println(bl);
+            counter++;
+        }
+        System.out.println("****************************************************");
+    }
+    
+    public void print_popularity(){
+        System.out.println("****************************************************\n"
+                + "This film has the following Popularities: ");
+        int counter=0;
+        for(float fl : this.popularity)
+        {
+            if(counter>0)
+                System.out.println(fl);
+            counter++;
+        }
+        System.out.println("****************************************************");
+    }
+    
+    
+////-------------------------------------------------------------------------------
     
     
     
