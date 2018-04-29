@@ -37,14 +37,15 @@ import org.omg.CORBA.TRANSIENT;
 public class Client{
     
 
-    public static String server_ip= "172.28.107.227";
+    public static String server_ip= "localhost";//"172.28.107.227";
+    static String master_ip = "localhost";
+    static int master_port = 9876;
 
     public static void main(String[] args) throws IOException, ParseException, ClassNotFoundException {
         
         
 
-        String master_ip = "localhost";
-        int master_port = 9876;
+        
         
         
         Scanner scan = new Scanner(System.in);
@@ -143,7 +144,9 @@ public class Client{
                 System.out.println("Delete request for Film ( "+movi.get_row_key()+" ) is successfully sent to server.");
                 break;
             case 4:
-                System.out.println("update request for Film ( "+movi.get_row_key()+" ) is successfully sent to server.");
+                System.out.println("Add cell update request for Film ( "+movi.get_row_key()+" ) is successfully sent to server.");
+            case 5:
+                System.out.println("Delete cell update request for Film ( "+movi.get_row_key()+" ) is successfully sent to server.");
                 
                 break;
         }
@@ -190,7 +193,7 @@ public class Client{
     
     public static Map.Entry<String,Integer> get_TabletServer(String row_key) throws IOException, ClassNotFoundException{
         Map.Entry<String,Integer> ip_port;
-        Socket soc_master = new Socket("localhost",5432); //for testing purpos only
+        Socket soc_master = new Socket(master_ip,master_port);
         OutputStream os = soc_master.getOutputStream();
         InputStream is = soc_master.getInputStream();
         ObjectOutputStream oos = new ObjectOutputStream(os);
@@ -304,7 +307,8 @@ public class Client{
                     break;
                 case 2:
                     //delete cell
-                    movi = new Movi(title,5);                    
+                    movi = new Movi(title,5);
+                    updateFilm_delete_interface(movi);
                     
                     flag=false;
                     break;
@@ -374,6 +378,56 @@ public class Client{
 
     
     
+    public static void updateFilm_delete_interface(Movi movi) throws ParseException{
+        Scanner scan = new Scanner(System.in);
+        int q = 0;
+        
+        System.out.println("Do you need to delete Release Date ?[0,1]");
+        q=scan.nextInt();
+        if(q==1)
+            movi.set_release();
+
+        System.out.println("Do you need to delete Category ?[0,1]");
+        q=scan.nextInt();
+        if(q==1)            
+            movi.set_category();
+        
+        System.out.println("Do you need to delete Overview ?[0,1]");
+        q=scan.nextInt();
+        if(q==1)
+            movi.set_overview();
+        
+        System.out.println("Do you need to delete Language ?[0,1]");
+        q=scan.nextInt();
+        if(q==1)
+            movi.set_language();
+        
+        System.out.println("Do you need to delete Production Company ?[0,1]");
+        q=scan.nextInt();
+        if(q==1)
+            movi.set_company();
+        
+        System.out.println("Do you need to delete Pruction Country ?[0,1]");
+        q=scan.nextInt();
+        if(q==1)
+            movi.set_country();
+        
+        System.out.println("Do you need to delete Runtime ?[0,1]");
+        q=scan.nextInt();
+        if(q==1)
+            movi.set_runtime();
+        
+        System.out.println("Do you need to delete Adults Contrain ?[0,1]");
+        q=scan.nextInt();
+        if(q==1)
+            movi.set_adult();
+        
+        System.out.println("Do you need to delete Popularity ?[0,1]");
+        q=scan.nextInt();
+        if(q==1)
+            movi.set_popularity();
+        
+    }
     
     
 }

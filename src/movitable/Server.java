@@ -42,12 +42,41 @@ public class Server{
         
 
         List<Thread> readers = new ArrayList<Thread>();
-        FilmDB db = new FilmDB();
+        
         Movi movi = null;
         ServerSocket ss = new ServerSocket(9876);
+        FilmDB db = new FilmDB();
         System.out.println("Server start");
         int x =0;
         
+        
+        //get data from master
+//        System.out.println("SERVER ASK MASTER TO SEND LIST OF MOVIS");
+        
+        
+        Socket s_master = new Socket("localhost", 3333);
+
+        //ask omar : how will i ask you to send data ?
+        System.out.println("SERVER READY TO RECIEVE LIST OF DATA FROM MASTER");
+        
+        
+        
+        
+        //then take data from master
+            
+            x++;
+            InputStream is_master = s_master.getInputStream();
+            ObjectInputStream ois_master = new ObjectInputStream(is_master);
+            db.setList((List<Movi>) ois_master.readObject());
+        
+        
+        
+        
+        
+        
+        
+        //start accept requests
+        System.out.println("SERVER START TO SERVE CLIENTS");
         
         while(true){
             Socket s = ss.accept();
@@ -80,6 +109,7 @@ public class Server{
                 {
                     reader.join();
                 }
+                db.setSocket(s);
                 db.setFilm(movi);
                 db.filmEditor();
 
@@ -116,8 +146,10 @@ public class Server{
  */
 class FilmDB{
     List<Movi> movis = new ArrayList<Movi>();
+    List<Movi> query = new ArrayList<Movi>();
     Movi movi;
     String row_key;
+    Socket s;
     
 
     public List<Movi> getDB(){
@@ -126,10 +158,15 @@ class FilmDB{
     
     public  void setFilm(Movi movi){
         this.movi = movi;
+        query.add(movi);
+    }
+    
+    public void setSocket(Socket ss){
+        this.s=ss;
     }
     
     
-    public  void filmEditor() throws ParseException{
+    public  void filmEditor() throws ParseException, IOException{
         switch (movi.get_operation()){
             case 2 :
                 movis.add(movi);
@@ -166,11 +203,31 @@ class FilmDB{
                         break;
                     }
                 }
+            case 7 : //omar must send me operation = 7 to update data periodically
+                update_master();
+                
+                break;
             default :
                 break;
                 
         }
     } 
+    
+
+    public void update_master() throws IOException{
+        
+        
+        
+        System.out.println("SEND QUERIES TO MASTER TO UPDATE DATABASE");
+        OutputStream os = s.getOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream(os);
+        oos.writeObject(query);
+        
+        oos.flush();
+        oos.close();
+        os.close();
+        
+    }
     
     
     public static void update_set(Movi from,Movi to) throws ParseException{
@@ -251,11 +308,240 @@ class FilmDB{
     
     
     public static void update_delete(Movi from,Movi to) throws ParseException{
+        int x,y;
+        try{
+            x=0;
+            for (Date date : from.get_release())
+            {
+                y=0;
+                if(x>0)
+                {
+                    System.out.println("from.get_release = "+date);
+                    for (Date date_ : to.get_release())
+                        if(y>0)
+                        {
+                            System.out.println("to.get_release() = "+date_);                            
+                            if(date_ == date)
+                                to.delete_release(date);
+                        }
+                        else
+                            y++;
+                }
+                
+                x++;
+            }
+        }catch(Exception e ){System.err.println("error in date");}
         
-        System.out.println("DELETE function is not implemented yet!");
+
+        try{
+            x=0;
+            for (String overview : from.get_overview())
+            {
+                y=0;
+                if(x>0)
+                {
+//                    System.out.println("from.get_overview = "+overview);
+                    for (String overview_ : to.get_overview())
+                        if(y>0)
+                        {
+//                            System.out.println("to.get_overview() = "+overview_);
+                            
+                            if(overview_.equals(overview))
+                            {
+                                to.delete_overview(overview);
+                                break;
+                            }
+                            
+                        }
+                        else
+                            y++;
+                }
+                x++;
+            }
+        }catch(Exception e ){System.err.println("error in overview");}
+        
+        
+        
+
+        try{
+            x=0;
+            for (String category : from.get_category())
+            {
+                y=0;
+                if(x>0)
+                {
+//                    System.out.println("from.get_category() = "+category);
+                    for (String category_ : to.get_category())
+                        if(y>0)
+                        {
+  //                          System.out.println("to.get_category() = "+category_);
+                            if(category_.equals(category))
+                            {try{
+                                to.delete_category(category);
+                                break;
+                            }catch(Exception e){System.err.println("category error!");}
+ //                           System.out.println("GOTIT!!!!");
+                            
+                            }
+                        }
+                        else
+                            y++;
+                }
+                x++;
+            }
+        }catch(Exception e ){System.err.println("error in category");}
+        
+        
+        try{
+            x=0;
+            for (String language : from.get_language())
+            {
+                y=0;
+                if(x>0)
+                    for (String language_ : to.get_language())
+                        if(y>0)
+                        {
+                            if(language_.equals(language))
+                            {
+                                to.delete_language(language);
+                                break;
+                            }
+                        }
+                        else
+                            y++;
+                x++;
+            }
+        }catch(Exception e ){System.err.println("error in language");}
+
+        
+        try{
+            x=0;
+            for (String company : from.get_company())
+            {
+                y=0;
+                if(x>0)
+                    for (String company_ : to.get_company())
+                        if(y>0)
+                        {
+                            if(company_.equals(company))
+                            {
+                                to.delete_company(company);
+                                break;
+                            }
+                        }
+                        else
+                            y++;
+                x++;
+            }
+        }catch(Exception e ){System.err.println("error in company");}
+
+
+        try{
+            x=0;
+            for (String country : from.get_country())
+            {
+                y=0;
+                if(x>0)
+                    for (String country_ : to.get_country())
+                        if(y>0)
+                        {
+                            if(country_.equals(country))
+                            {
+                                to.delete_country(country);
+                                break;
+                            }
+                        }
+                        else
+                            y++;
+                x++;
+            }
+        }catch(Exception e ){System.err.println("error in country");}
+
+
+        try{
+            x=0;
+            for (Float runtime : from.get_runtime())
+            {
+                y=0;
+                if(x>0)
+                    for (Float runtime_ : to.get_runtime())
+                        if(y>0)
+                        {
+                            if(runtime_ == runtime)
+                            {
+                                to.delete_runtime(runtime);
+                                break;
+                            }
+                        }
+                        else
+                            y++;
+                x++;
+            }
+        }catch(Exception e ){System.err.println("error in runtime");}
+
+
+
+        
+
+        try{
+            x=0;
+            for (Boolean adult : from.get_adult())
+            {
+                y=0;
+                if(x>0)
+                {
+                    System.out.println("from.get_adult = "+adult);                    
+                    for (Boolean adult_ : to.get_adult())
+                        if(y>0)
+                        {
+                            System.out.println("to.get_adult() = "+adult_);
+                            if((adult_ && adult)==false)
+                            {                                
+                                to.delete_adult(adult);
+                                break;
+                            }
+                        }
+                        else
+                            y++;
+                }
+                x++;
+            }
+        }catch(Exception e ){System.err.println("error in adult");}
+
+        
+        try{
+            x=0;
+            for (Float popularity : from.get_popularity())
+            {
+                y=0;
+                if(x>0)
+                {
+                    System.out.println("from.get_popularity = "+popularity);                    
+                    for (Float popularity_ : to.get_popularity())
+                        if(y>0)
+                        {
+                            System.out.println("to.get_popularity() = "+popularity_);
+                            if(popularity_.toString().equals(popularity.toString()) )
+                            {
+                                to.delete_popularity(popularity);
+                                System.out.println("GOTIT in POPULARITY");
+                                break;
+                            }
+                        }
+                        else
+                            y++;
+                }
+                x++;
+            }
+        }catch(Exception e ){System.err.println("error in popularity");}
     
     }
-        
+
+    void setList(List<Movi> list) {
+        this.movis = list;
+        System.out.println("NOW SERVER HAS LIST OF MOVIS");
+    }
+    
 
     
     

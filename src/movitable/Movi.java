@@ -12,6 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -255,6 +256,112 @@ public class Movi implements Serializable{
     
     
 ////-------------------------------------------------------------------------------
+    
+    
+    
+    public void delete_release(Date date) throws ParseException{
+        try{
+        for(Iterator<Date> it = release.listIterator(); it.hasNext() ;)
+        {
+            if(it.next().toString().equals(date.toString()))
+                it.remove();
+        }
+//        release.remove(date);
+        }catch(Exception e ){System.err.println("release data error");}
+    }
+    
+    
+    public void delete_category(String str){
+        try{
+        for(Iterator<String> it = category.listIterator(); it.hasNext() ;)
+        {
+            if(it.next().equals(str))
+                it.remove();
+        }
+//        category.remove(str);
+        }catch(Exception e ){System.err.println("category error");}
+    }
+    
+    public void delete_overview(String str){
+        try{
+        for(Iterator<String> it = overview.listIterator(); it.hasNext() ;)
+        {
+            if(it.next().equals(str))
+                it.remove();
+        }
+//        overview.remove(str);
+        }catch(Exception e ){System.err.println("overview error");}
+    }
+    
+    public void delete_language(String str){
+        try{
+        for(Iterator<String> it = language.listIterator(); it.hasNext() ;)
+        {
+            if(it.next().equals(str))
+                it.remove();
+        }
+//        language.remove(str);
+        }catch(Exception e ){System.err.println("language error");}
+    }
+    
+    public void delete_company(String str){
+        try{
+        for(Iterator<String> it = company.listIterator(); it.hasNext() ;)
+        {
+            if(it.next().equals(str))
+                it.remove();
+        }
+//        company.remove(str);
+        }catch(Exception e ){System.err.println("company error");}
+    }
+    
+    public void delete_country(String str){
+        try{
+        for(Iterator<String> it = country.listIterator(); it.hasNext() ;)
+        {
+            if(it.next().equals(str))
+                it.remove();
+        }
+//        country.remove(str);
+        }catch(Exception e ){System.err.println("country error");}
+    }
+    
+    public void delete_runtime(Float  fl){
+        try{
+        for(Iterator<Float> it = runtime.listIterator(); it.hasNext() ;)
+        {
+            if(it.next() -fl ==0)
+                it.remove();
+        }
+//        runtime.remove(fl);
+        }catch(Exception e ){System.err.println("runtime error");}
+    }
+    
+    public void delete_adult(Boolean bl){
+        try{
+        for(Iterator<Boolean> it = adult.listIterator(); it.hasNext() ;)
+        {
+            if((it.next() && bl)==false)
+                it.remove();
+        }
+//        adult.remove(bl);
+        }catch(Exception e ){System.err.println("adult error");}
+    }
+    
+    public void delete_popularity(Float fl){
+        try{
+        for(Iterator<Float> it = popularity.listIterator(); it.hasNext() ;)
+        {
+            if(it.next() -fl == 0)
+                it.remove();
+        }
+//        popularity.remove(fl);
+        }catch(Exception e ){System.err.println("popularity error");}
+    }
+    
+    
+////-------------------------------------------------------------------------------
+    
     
     public void print_release() throws ParseException{
         System.out.println("****************************************************\n"
